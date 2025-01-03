@@ -1,0 +1,41 @@
+apiVersion: app/v1
+kind: deployment
+metadata:
+  name: mysql
+  labels: 
+    app:  mysql
+    tier: bd
+    project: expense
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: mysql
+      tier: bd
+    template:
+      labels:
+        app: mysql
+        tier: bd
+        project: expense
+      spec:
+      containers:
+      - name: mysql
+        image: raidi/mysql:{{ .Values.deployment.imageVersion}}
+---
+apiVersion:  v1
+kind: service
+metadata: 
+  name: bd
+  namespace: expense
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    labels:
+      app: mysql
+      tier: bd
+      project: expense
+    ports:
+    - name: mysql-port
+      protocol: TCP
+      ports: 3306
+      targetPort: 3306
